@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tag-Memo">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+  <link rel="manifest" href="manifest.json">
+  <title>Tag-Memo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <style>
+    :root {
+      --safe-top: env(safe-area-inset-top, 44px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    :root, [data-theme="dark"] {
+      --bg: #0E0D0B;
+      --surface: #1A1916;
+      --surface2: #232118;
+      --border: #2E2B24;
+      --border2: #3A3730;
+      --accent: #C8A97E;
+      --accent-dim: rgba(200,169,126,0.12);
+      --accent-glow: rgba(200,169,126,0.06);
+      --text: #EDE8DF;
+      --text-dim: #6E6A62;
+      --text-mid: #9A9488;
+      --danger: #C47B6A;
+      --success: #7AAE8C;
+      --tag-bg: #221F19;
+    }
+    [data-theme="light"] {
+      --bg: #F5F2ED;
+      --surface: #FFFFFF;
+      --surface2: #EDE9E2;
+      --border: #D6D0C8;
+      --border2: #C4BCAF;
+      --accent: #8B6A3E;
+      --accent-dim: rgba(139,106,62,0.22);
+      --accent-glow: rgba(139,106,62,0.05);
+      --text: #1C1A17;
+      --text-dim: #8A8277;
+      --text-mid: #5C574F;
+      --danger: #B5392A;
+      --success: #3A7A54;
+      --tag-bg: #EDE9E2;
+    }
+    @media (prefers-color-scheme: light) {
+      [data-theme="system"] {
+        --bg: #F5F2ED;
+        --surface: #FFFFFF;
+        --surface2: #EDE9E2;
+        --border: #D6D0C8;
+        --border2: #C4BCAF;
+        --accent: #8B6A3E;
+        --accent-dim: rgba(139,106,62,0.22);
+        --accent-glow: rgba(139,106,62,0.05);
+        --text: #1C1A17;
+        --text-dim: #8A8277;
+        --text-mid: #5C574F;
+        --danger: #B5392A;
+        --success: #3A7A54;
+        --tag-bg: #EDE9E2;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; overscroll-behavior: none; }
+
+    #app { display: flex; flex-direction: column; height: 100%; max-height: 100vh; }
+
+    .header {
+      padding: calc(var(--safe-top) + 12px) 20px 14px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-title { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 400; color: var(--accent); letter-spacing: 0.1em; }
+    .header-sub { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; margin-top: 2px; }
+
+    .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    .tabbar {
+      display: flex; flex-shrink: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding-bottom: calc(var(--safe-bottom) + 4px);
+    }
+    .tab-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 10px 2px 6px; background: none; border: none; color: var(--text-dim);
+      font-size: 9px; font-family: 'Noto Sans JP', sans-serif; cursor: pointer;
+      transition: color 0.2s; letter-spacing: 0.04em;
+    }
+    .tab-btn.active { color: var(--accent); }
+    .tab-btn svg { width: 22px; height: 22px; }
+
+    .panel { display: none; padding: 18px 16px; min-height: 100%; }
+    .panel.active { display: block; }
+
+    /* ── Form ── */
+    .form-section { margin-bottom: 18px; }
+    .form-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .date-input {
+      padding: 13px 14px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 16px; font-family: 'Noto Sans JP', sans-serif;
+      -webkit-appearance: none; outline: none;
+    }
+    .date-input:focus { border-color: var(--accent); }
+    .date-display { font-size: 12px; color: var(--text-dim); margin-top: 6px; letter-spacing: 0.04em; min-height: 16px; }
+    @media (min-width: 768px) { .date-display { display: none; } }
+
+    .tags-grid { display: flex; flex-wrap: nowrap; gap: 8px; padding-bottom: 4px; width: max-content; }
+    .tag-chip {
+      padding: 8px 14px; background: var(--tag-bg); border: 1px solid var(--border2);
+      border-radius: 20px; font-size: 13px; color: var(--text-mid); cursor: pointer;
+      transition: all 0.15s; user-select: none; -webkit-user-select: none; white-space: nowrap;
+    }
+    .tag-chip.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+    .comment-input {
+      width: 100%; padding: 13px 14px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 16px; font-family: 'Noto Sans JP', sans-serif;
+      resize: none; min-height: 110px; outline: none; line-height: 1.7;
+    }
+    .comment-input:focus { border-color: var(--accent); }
+    .comment-input::placeholder { color: var(--text-dim); }
+
+    .btn-primary {
+      width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 10px;
+      color: #1a1612; font-size: 15px; font-family: 'Noto Sans JP', sans-serif; font-weight: 500;
+      cursor: pointer; transition: opacity 0.15s; letter-spacing: 0.06em;
+    }
+    .btn-primary:active { opacity: 0.75; }
+
+    /* ── List ── */
+    .filter-wrap { margin-bottom: 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .filter-bar { display: flex; gap: 7px; padding-bottom: 4px; width: max-content; }
+    .filter-chip {
+      padding: 6px 13px; background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 16px; font-size: 12px; color: var(--text-dim); cursor: pointer; white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .filter-chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+    .entry-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 14px 12px; margin-bottom: 10px;
+      position: relative; transition: border-color 0.15s;
+    }
+    .entry-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+    .entry-date { font-size: 12px; color: var(--text-dim); letter-spacing: 0.04em; }
+    .entry-dow { font-size: 11px; color: var(--text-dim); }
+    .entry-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .entry-tag {
+      font-size: 11px; padding: 3px 9px; background: var(--accent-dim); color: var(--accent);
+      border-radius: 10px; border: 1px solid rgba(200,169,126,0.18);
+    }
+    .entry-comment { font-size: 14px; color: var(--text); line-height: 1.7; white-space: pre-wrap; word-break: break-all; }
+    .entry-delete {
+      position: absolute; top: 12px; right: 12px; background: none; border: none;
+      color: var(--text-dim); cursor: pointer; font-size: 18px; padding: 4px; line-height: 1;
+      transition: color 0.15s;
+    }
+    .entry-delete:active { color: var(--danger); }
+    .entry-edit {
+      position: absolute; top: 12px; right: 40px; background: none; border: none;
+      color: var(--text-dim); cursor: pointer; font-size: 18px; padding: 4px; line-height: 1;
+      transition: color 0.15s;
+    }
+    .entry-edit:active { color: var(--accent); }
+
+    /* ── Edit Modal ── */
+    .edit-modal-inner {
+      background: var(--surface); border: 1px solid var(--border2); border-radius: 16px;
+      padding: 20px 18px; margin: 0 16px; max-width: 420px; width: 100%;
+      max-height: 85vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
+    .edit-modal-title { font-size: 14px; font-weight: 500; color: var(--accent); margin-bottom: 16px; letter-spacing: 0.04em; }
+    .edit-modal-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px; display: block; margin-top: 14px; }
+    .edit-modal-label:first-of-type { margin-top: 0; }
+    .edit-tags-grid { display: flex; flex-wrap: nowrap; gap: 8px; padding-bottom: 4px; width: max-content; }
+    .edit-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+    /* ── Calendar ── */
+    .cal-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .cal-month-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .cal-month { font-family: 'Noto Serif JP', serif; font-size: 16px; color: var(--accent); letter-spacing: 0.04em; }
+    .cal-arrow {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-mid); font-size: 18px; cursor: pointer; padding: 8px 14px; line-height: 1;
+    }
+    .cal-arrow:active { background: var(--surface2); }
+    .cal-today-btn {
+      background: var(--surface); border: 1px solid var(--accent); border-radius: 8px;
+      color: var(--accent); font-size: 12px; cursor: pointer; padding: 6px 12px; line-height: 1;
+      font-family: 'Noto Sans JP', sans-serif; white-space: nowrap;
+    }
+    .cal-today-btn:active { opacity: 0.7; }
+    .cal-today-btn:disabled { opacity: 0.35; cursor: default; border-color: var(--border); color: var(--text-dim); }
+    .cal-today-btn:disabled:active { opacity: 0.35; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .cal-dow { text-align: center; font-size: 10px; color: var(--text-dim); padding: 5px 0; }
+    .cal-dow.dow-sat { color: #5B8FCF; }
+    .cal-dow.dow-sun { color: #C45A5A; }
+    .cal-day {
+      aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1px; padding: 2px;
+      border-radius: 8px; cursor: pointer; position: relative;
+      transition: background 0.12s; user-select: none; -webkit-user-select: none;
+    }
+    .cal-day.other-month { opacity: 0.18; pointer-events: none; }
+    .cal-day.today { background: var(--surface2); }
+    .cal-day:not(.has-entry) .cal-num { color: var(--text-dim); }
+    .cal-day.has-entry .cal-num { color: var(--accent); }
+    .cal-day.today .cal-num { color: var(--accent); font-weight: 500; }
+    .cal-day.selected { border: 2px solid var(--accent); }
+    .cal-day.selected .cal-num { color: var(--accent); }
+    .cal-day:active:not(.other-month) { background: var(--surface2); }
+    .cal-day.is-saturday .cal-num { color: #5B8FCF !important; }
+    .cal-day.is-sunday .cal-num,
+    .cal-day.is-holiday .cal-num { color: #C45A5A !important; }
+    .cal-num { font-size: 13px; line-height: 1; }
+    .cal-count { font-size: 9px; color: var(--accent); opacity: 0.9; line-height: 1; }
+
+    .cal-detail { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 16px; }
+    .cal-detail-title { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; letter-spacing: 0.04em; }
+
+    /* ── Settings ── */
+    .stats-row { display: flex; gap: 10px; margin-bottom: 22px; }
+    .stat-card {
+      flex: 1; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 10px; text-align: center;
+    }
+    .stat-num { font-family: 'Noto Serif JP', serif; font-size: 26px; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 10px; color: var(--text-dim); margin-top: 5px; letter-spacing: 0.06em; }
+
+    .section-head { font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px; }
+
+    .theme-selector { display: flex; gap: 8px; margin-bottom: 20px; }
+    .theme-btn {
+      flex: 1; padding: 11px 8px; background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 10px; color: var(--text-mid); font-size: 13px; cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
+    }
+    .theme-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+    .tag-manage-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; margin-bottom: 14px; min-height: 20px; }
+    .tag-m-item {
+      display: flex; align-items: center; gap: 7px; padding: 7px 13px;
+      background: var(--surface); border: 1px solid var(--border2); border-radius: 20px;
+    }
+    .tag-m-name { font-size: 13px; }
+    .tag-m-del { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 17px; line-height: 1; padding: 0 2px; }
+    .tag-m-del:active { color: var(--danger); }
+
+    .tag-add-row { display: flex; gap: 8px; }
+    .tag-add-input {
+      flex: 1; min-width: 0; padding: 12px 13px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 16px; font-family: 'Noto Sans JP', sans-serif; outline: none;
+    }
+    .tag-add-input:focus { border-color: var(--accent); }
+    .tag-add-input::placeholder { color: var(--text-dim); }
+    .btn-add {
+      padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border2);
+      border-radius: 10px; color: var(--accent); font-size: 14px; cursor: pointer; white-space: nowrap;
+    }
+    .btn-add:active { opacity: 0.7; }
+
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    .backup-btn {
+      width: 100%; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 14px; font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer; margin-bottom: 9px; display: flex; align-items: center; gap: 14px; text-align: left;
+    }
+    .backup-btn:active { background: var(--surface2); }
+    .backup-icon { font-size: 20px; flex-shrink: 0; }
+    .backup-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+    /* ── Chart ── */
+    .chart-wrap {
+      display: flex; align-items: flex-end; gap: 4px;
+      height: 200px; border-bottom: 1px solid var(--border);
+      margin-bottom: 4px; padding: 0 2px;
+    }
+    .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; }
+    .chart-bar { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; opacity: 0.6; min-height: 2px; }
+    .chart-bar.this-month { opacity: 1; }
+    .chart-count-label { font-size: 9px; color: var(--text-mid); line-height: 1; }
+    .chart-labels { display: flex; gap: 4px; padding: 4px 2px 0; }
+    .chart-label-col { flex: 1; text-align: center; font-size: 8px; color: var(--text-dim); line-height: 1.4; white-space: pre-line; }
+
+    /* ── Pie Chart ── */
+    .pie-section { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 18px; }
+    .pie-section-title { font-size: 10px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; }
+    .pie-layout { display: flex; align-items: center; gap: 20px; }
+    .pie-chart { width: 100px; height: 100px; border-radius: 50%; flex-shrink: 0; }
+    .pie-legend { display: flex; flex-direction: column; gap: 8px; }
+    .pie-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text); }
+    .pie-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .pie-legend-pct { color: var(--text-mid); font-size: 11px; }
+    .pie-no-data { font-size: 13px; color: var(--text-dim); padding: 12px 0; }
+
+    /* ── Modal ── */
+    .btn-modal-cancel {
+      padding: 10px 18px; background: var(--surface2); border: 1px solid var(--border2);
+      border-radius: 8px; color: var(--text-mid); font-size: 14px; cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .btn-modal-ok {
+      padding: 10px 18px; background: var(--danger); border: none;
+      border-radius: 8px; color: #fff; font-size: 14px; cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+
+    .empty { text-align: center; color: var(--text-dim); padding: 36px 16px; font-size: 13px; line-height: 1.8; }
+
+    .toast {
+      position: fixed; bottom: calc(72px + var(--safe-bottom) + 8px); left: 50%;
+      transform: translateX(-50%); background: var(--surface2);
+      border: 1px solid var(--border2); color: var(--text);
+      padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 9999;
+      opacity: 0; transition: opacity 0.25s; white-space: nowrap; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    /* scrollbar hide */
+    .filter-wrap::-webkit-scrollbar { display: none; }
+    .content::-webkit-scrollbar { display: none; }
+  </style>
+  <script>(function(){
+    const m = localStorage.getItem('theme-mode') || 'system';
+    document.documentElement.setAttribute('data-theme', m);
+  })();</script>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div>
+      <div class="header-title" id="header-title">Tag-Memo</div>
+      <div class="header-sub" id="header-sub">記録する</div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+
+    <!-- 記録タブ -->
+    <div class="panel active" id="panel-record">
+      <div class="form-section">
+        <label class="form-label">日付・時刻</label>
+        <div style="display:flex;gap:8px;">
+          <input type="date" class="date-input" id="entry-date" style="flex:1">
+          <input type="time" class="date-input" id="entry-time" style="width:110px">
+        </div>
+        <div class="date-display" id="date-display"></div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">タグ</label>
+        <div class="filter-wrap" style="margin-bottom:0">
+          <div class="tags-grid" id="tag-selector">
+            <span style="color:var(--text-dim);font-size:13px">設定タブでタグを追加してください</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">メモ</label>
+        <textarea class="comment-input" id="entry-comment" placeholder="メモを入力..."></textarea>
+      </div>
+      <button class="btn-primary" id="save-btn">記　録　す　る</button>
+    </div>
+
+    <!-- 一覧タブ -->
+    <div class="panel" id="panel-list">
+      <div class="filter-wrap">
+        <div class="filter-bar" id="filter-bar"></div>
+      </div>
+      <div id="entries-list"></div>
+    </div>
+
+    <!-- カレンダータブ -->
+    <div class="panel" id="panel-calendar">
+      <div class="cal-nav">
+        <button class="cal-arrow" id="cal-prev">‹</button>
+        <div class="cal-month-wrap">
+          <div class="cal-month" id="cal-month-label"></div>
+          <button class="cal-today-btn" id="cal-today-btn">今月に戻る</button>
+        </div>
+        <button class="cal-arrow" id="cal-next">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-detail" id="cal-detail"></div>
+    </div>
+
+    <!-- グラフタブ -->
+    <div class="panel" id="panel-chart">
+      <div class="cal-nav" style="margin-bottom:16px">
+        <button class="cal-arrow" id="chart-prev">‹</button>
+        <div class="cal-month" id="chart-range-label">月別記録数</div>
+        <button class="cal-arrow" id="chart-next">›</button>
+      </div>
+      <div id="chart-area"></div>
+    </div>
+
+    <!-- 設定タブ -->
+    <div class="panel" id="panel-settings">
+      <div class="stats-row" id="stats-row"></div>
+      <div class="section-head">テーマ</div>
+      <div class="theme-selector">
+        <button class="theme-btn" data-mode="light">ライト</button>
+        <button class="theme-btn" data-mode="dark">ダーク</button>
+        <button class="theme-btn" data-mode="system">システム</button>
+      </div>
+      <div class="divider"></div>
+      <div class="section-head">タグ管理</div>
+      <div class="tag-add-row">
+        <input type="text" class="tag-add-input" id="new-tag-input" placeholder="新しいタグ名">
+        <button class="btn-add" id="add-tag-btn">+ 追加</button>
+      </div>
+      <div id="tag-length-warn" style="display:none;font-size:11px;color:var(--danger);margin-top:6px;">タグ名は20文字以内にしてください</div>
+      <div class="tag-manage-wrap" id="tag-manage-wrap"></div>
+      <div class="divider"></div>
+      <div class="section-head">バックアップ</div>
+      <button class="backup-btn" id="export-btn">
+        <span class="backup-icon">⬆️</span>
+        <div><div>JSONエクスポート</div><div class="backup-desc">すべてのデータをファイルに保存</div></div>
+      </button>
+      <button class="backup-btn" id="import-btn">
+        <span class="backup-icon">⬇️</span>
+        <div><div>JSONインポート</div><div class="backup-desc">バックアップファイルから復元（マージ）</div></div>
+      </button>
+      <input type="file" id="import-file" accept=".json" style="display:none">
+      <button class="backup-btn" id="import-fresh-btn">
+        <span class="backup-icon">⬇️</span>
+        <div><div>JSONインポート（完全置換）</div><div class="backup-desc">既存データをすべて削除して上書き</div></div>
+      </button>
+      <input type="file" id="import-file-fresh" accept=".json" style="display:none">
+      <div style="margin-top:8px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;">
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.7;">
+          ⚠️ iOSはSafariのキャッシュ削除でデータが消える場合があります。<br>定期的にエクスポートしてiCloud Driveに保存することを推奨します。
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tabbar">
+    <button class="tab-btn active" data-tab="record">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3" stroke-linecap="round"/>
+      </svg>
+      記録
+    </button>
+    <button class="tab-btn" data-tab="list">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M9 6h11M9 12h11M9 18h11M5 6h.01M5 12h.01M5 18h.01" stroke-linecap="round"/>
+      </svg>
+      一覧
+    </button>
+    <button class="tab-btn" data-tab="calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round"/>
+      </svg>
+      カレンダー
+    </button>
+    <button class="tab-btn" data-tab="chart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="12" width="4" height="9" rx="1"/>
+        <rect x="10" y="7" width="4" height="14" rx="1"/>
+        <rect x="17" y="3" width="4" height="18" rx="1"/>
+      </svg>
+      グラフ
+    </button>
+    <button class="tab-btn" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      設定
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Modal overlay (replaces confirm()) -->
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px 20px;margin:0 24px;max-width:320px;width:100%;">
+    <p id="modal-msg" style="font-size:14px;line-height:1.7;color:var(--text);margin-bottom:20px;white-space:pre-wrap;"></p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button id="modal-cancel" class="btn-modal-cancel">キャンセル</button>
+      <button id="modal-ok" class="btn-modal-ok">削除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;">
+  <div class="edit-modal-inner">
+    <div class="edit-modal-title">記録を編集</div>
+    <label class="edit-modal-label">日付・時刻</label>
+    <div style="display:flex;gap:8px;">
+      <input type="date" class="date-input" id="edit-date" style="flex:1">
+      <input type="time" class="date-input" id="edit-time" style="width:110px">
+    </div>
+    <label class="edit-modal-label">タグ</label>
+    <div class="filter-wrap" style="margin-bottom:0">
+      <div class="edit-tags-grid" id="edit-tags-grid"></div>
+    </div>
+    <label class="edit-modal-label">メモ</label>
+    <textarea class="comment-input" id="edit-comment" placeholder="メモを入力..." style="min-height:90px"></textarea>
+    <div class="edit-modal-actions">
+      <button id="edit-cancel" class="btn-modal-cancel">キャンセル</button>
+      <button id="edit-save" style="padding:10px 18px;background:var(--accent);border:none;border-radius:8px;color:#1a1612;font-size:14px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;touch-action:manipulation;-webkit-tap-highlight-color:transparent;">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====================================================
+//  IndexedDB
+// ====================================================
+const DB_NAME = 'nisshi_v1';
+const DB_VER  = 1;
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('entries')) {
+        const s = d.createObjectStore('entries', { keyPath: 'id', autoIncrement: true });
+        s.createIndex('date', 'date', { unique: false });
+      }
+      if (!d.objectStoreNames.contains('tags')) {
+        d.createObjectStore('tags', { keyPath: 'name' });
+      }
+    };
+    req.onsuccess = e => {
+      db = e.target.result;
+      db.onclose = () => { db = null; };
+      db.onversionchange = () => { db.close(); db = null; };
+      resolve();
+    };
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+function store(name, mode = 'readonly') {
+  return db.transaction(name, mode).objectStore(name);
+}
+
+async function ensureDB() {
+  try {
+    if (!db) throw new Error('db is null');
+    db.transaction('entries', 'readonly');
+  } catch {
+    await openDB();
+    allEntries = await getAllEntries();
+  }
+}
+
+function getAllEntries() {
+  return new Promise(res => {
+    store('entries').getAll().onsuccess = e =>
+      res([...e.target.result].sort((a, b) => {
+        const dc = b.date.localeCompare(a.date);
+        return dc !== 0 ? dc : (b.createdAt || 0) - (a.createdAt || 0);
+      }));
+  });
+}
+
+function getAllTags() {
+  return new Promise(res => {
+    store('tags').getAll().onsuccess = e => res(e.target.result.map(t => t.name));
+  });
+}
+
+function addEntry(entry) {
+  return new Promise(res => {
+    store('entries', 'readwrite').add(entry).onsuccess = () => res();
+  });
+}
+
+function deleteEntryById(id) {
+  return new Promise(res => {
+    store('entries', 'readwrite').delete(id).onsuccess = () => res();
+  });
+}
+
+function updateEntry(entry) {
+  return new Promise(res => {
+    store('entries', 'readwrite').put(entry).onsuccess = () => res();
+  });
+}
+
+function putTag(name) {
+  return new Promise(res => {
+    store('tags', 'readwrite').put({ name }).onsuccess = () => res();
+  });
+}
+
+function deleteTagByName(name) {
+  return new Promise(res => {
+    store('tags', 'readwrite').delete(name).onsuccess = () => res();
+  });
+}
+
+function clearStore(name) {
+  return new Promise(res => {
+    store(name, 'readwrite').clear().onsuccess = () => res();
+  });
+}
+
+// ====================================================
+//  App State
+// ====================================================
+let allEntries   = [];
+let selectedTags = [];
+let activeFilter = null;
+const FILTER_NO_TAG = '__no_tag__';
+let calYear    = new Date().getFullYear();
+let calMonth   = new Date().getMonth();
+let calSelected = todayStr();
+let chartOffset = 0;
+let _holidayCache = {};
+
+// ====================================================
+//  Utilities
+// ====================================================
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+}
+function p2(n) { return String(n).padStart(2,'0'); }
+function jpDate(s) {
+  const [y,m,d] = s.split('-');
+  return `${y}年${+m}月${+d}日`;
+}
+const DOW = ['日','月','火','水','木','金','土'];
+function getDow(dateStr) {
+  return '(' + DOW[new Date(dateStr + 'T00:00:00').getDay()] + ')';
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function toast(msg, dur = 2000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ====================================================
+//  Theme
+// ====================================================
+function applyTheme(mode) {
+  document.documentElement.setAttribute('data-theme', mode);
+  localStorage.setItem('theme-mode', mode);
+}
+
+function isLightMode() {
+  const mode = document.documentElement.getAttribute('data-theme') || 'system';
+  if (mode === 'light') return true;
+  if (mode === 'dark')  return false;
+  return window.matchMedia('(prefers-color-scheme: light)').matches;
+}
+
+// ====================================================
+//  Modal (replaces browser confirm())
+// ====================================================
+function confirmDialog(msg, okLabel = '削除') {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('modal-overlay');
+    const okBtn = document.getElementById('modal-ok');
+    const cancelBtn = document.getElementById('modal-cancel');
+    document.getElementById('modal-msg').textContent = msg;
+    okBtn.textContent = okLabel;
+    overlay.style.display = 'flex';
+
+    // iOS PWA: スクロールコンテナを一時的に無効化し、タッチイベントの競合を防ぐ
+    const content = document.getElementById('content');
+    content.style.overflowY = 'hidden';
+
+    const ac = new AbortController();
+    const sig = ac.signal;
+    const cleanup = () => {
+      ac.abort();
+      overlay.style.display = 'none';
+      content.style.overflowY = '';
+    };
+
+    // resolved フラグで二重発火を防止。touchend で preventDefault() し合成 click を抑制
+    let resolved = false;
+    const fire = (result, e) => {
+      if (resolved) return;
+      resolved = true;
+      e.stopPropagation();
+      cleanup();
+      resolve(result);
+    };
+    const onOkTouch    = e => { e.preventDefault(); fire(true,  e); };
+    const onCancelTouch = e => { e.preventDefault(); fire(false, e); };
+    const onOkClick    = e => fire(true,  e);
+    const onCancelClick = e => fire(false, e);
+
+    okBtn.addEventListener('touchend', onOkTouch, { signal: sig });
+    cancelBtn.addEventListener('touchend', onCancelTouch, { signal: sig });
+    okBtn.addEventListener('click', onOkClick, { signal: sig });
+    cancelBtn.addEventListener('click', onCancelClick, { signal: sig });
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) fire(false, e);
+    }, { signal: sig });
+  });
+}
+
+// ====================================================
+//  Edit Modal
+// ====================================================
+async function openEditModal(entry, onSaved) {
+  const overlay = document.getElementById('edit-modal-overlay');
+  const content = document.getElementById('content');
+
+  document.getElementById('edit-date').value    = entry.date || '';
+  document.getElementById('edit-time').value    = entry.time || '';
+  document.getElementById('edit-comment').value = entry.comment || '';
+
+  // Populate tag chips (usage count descending, same as record tab)
+  const tags = await getAllTags();
+  const grid = document.getElementById('edit-tags-grid');
+  grid.innerHTML = '';
+  let editSelectedTags = entry.tags ? [...entry.tags] : [];
+  if (!tags.length) {
+    grid.innerHTML = '<span style="color:var(--text-dim);font-size:13px">タグなし</span>';
+  } else {
+    const tagCountMap = {};
+    allEntries.forEach(e => {
+      if (e.tags) e.tags.forEach(t => { tagCountMap[t] = (tagCountMap[t] || 0) + 1; });
+    });
+    const sortedTags = tags
+      .map(t => ({ name: t, count: tagCountMap[t] || 0 }))
+      .sort((a, b) => b.count - a.count)
+      .map(t => t.name);
+    sortedTags.forEach(tag => {
+      const c = document.createElement('div');
+      c.className = 'tag-chip' + (editSelectedTags.includes(tag) ? ' selected' : '');
+      c.textContent = tag;
+      c.style.cursor = 'pointer';
+      c.addEventListener('click', () => {
+        if (editSelectedTags.includes(tag)) {
+          editSelectedTags = editSelectedTags.filter(t => t !== tag);
+          c.classList.remove('selected');
+        } else {
+          editSelectedTags.push(tag);
+          c.classList.add('selected');
+        }
+      });
+      grid.appendChild(c);
+    });
+  }
+
+  overlay.style.display = 'flex';
+  content.style.overflowY = 'hidden';
+
+  const ac = new AbortController();
+  const sig = ac.signal;
+  const cleanup = () => {
+    ac.abort();
+    overlay.style.display = 'none';
+    content.style.overflowY = '';
+  };
+
+  let resolved = false;
+
+  const onSave = async e => {
+    if (resolved) return;
+    resolved = true;
+    e.stopPropagation();
+    const date    = document.getElementById('edit-date').value;
+    const time    = document.getElementById('edit-time').value;
+    const comment = document.getElementById('edit-comment').value.trim();
+    if (!date) { resolved = false; toast('日付を選択してください'); return; }
+    cleanup();
+    const updated = { ...entry, date, time: time || '', tags: [...editSelectedTags], comment };
+    await updateEntry(updated);
+    allEntries = await getAllEntries();
+    toast('更新しました ✓');
+    onSaved();
+  };
+
+  const onCancel = e => {
+    if (resolved) return;
+    resolved = true;
+    e.stopPropagation();
+    cleanup();
+  };
+
+  const onSaveTouch   = e => { e.preventDefault(); onSave(e); };
+  const onCancelTouch = e => { e.preventDefault(); onCancel(e); };
+  document.getElementById('edit-save').addEventListener('touchend', onSaveTouch, { signal: sig });
+  document.getElementById('edit-cancel').addEventListener('touchend', onCancelTouch, { signal: sig });
+  document.getElementById('edit-save').addEventListener('click', onSave, { signal: sig });
+  document.getElementById('edit-cancel').addEventListener('click', onCancel, { signal: sig });
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) onCancel(e);
+  }, { signal: sig });
+}
+
+// ====================================================
+//  Japanese Holidays
+// ====================================================
+function nthWeekday(year, month0, n, weekday) {
+  const d = new Date(year, month0, 1);
+  let count = 0;
+  while (d.getMonth() === month0) {
+    if (d.getDay() === weekday) { count++; if (count === n) return new Date(d); }
+    d.setDate(d.getDate() + 1);
+  }
+  return null;
+}
+
+function getJpHolidays(year) {
+  if (_holidayCache[year]) return _holidayCache[year];
+  const fmt = (m, d) => `${year}-${p2(m)}-${p2(d)}`;
+  const set = new Set();
+
+  // Fixed date holidays
+  [[1,1],[2,11],[2,23],[4,29],[5,3],[5,4],[5,5],[8,11],[11,3],[11,23]]
+    .forEach(([m,d]) => set.add(fmt(m,d)));
+
+  // Nth weekday holidays: [month(1-based), n, weekday(1=Mon)]
+  [[1,2,1],[7,3,1],[9,3,1],[10,2,1]].forEach(([m,n,wd]) => {
+    const d = nthWeekday(year, m-1, n, wd);
+    if (d) set.add(fmt(d.getMonth()+1, d.getDate()));
+  });
+
+  // Approximate vernal/autumnal equinox
+  const springDay = Math.floor(20.8431 + 0.242194*(year-1980) - Math.floor((year-1980)/4));
+  set.add(fmt(3, springDay));
+  const autumnDay = Math.floor(23.2488 + 0.242194*(year-1980) - Math.floor((year-1980)/4));
+  set.add(fmt(9, autumnDay));
+
+  // Substitute holidays (振替休日): holiday on Sunday → next weekday
+  const toCheck = new Set(set);
+  toCheck.forEach(dateStr => {
+    const d = new Date(dateStr + 'T00:00:00');
+    if (d.getDay() === 0) {
+      const next = new Date(d);
+      next.setDate(next.getDate() + 1);
+      while (set.has(fmt(next.getMonth()+1, next.getDate()))) {
+        next.setDate(next.getDate() + 1);
+      }
+      set.add(fmt(next.getMonth()+1, next.getDate()));
+    }
+  });
+
+  _holidayCache[year] = set;
+  return set;
+}
+
+// ====================================================
+//  Tab: 記録
+// ====================================================
+function updateDateDisplay() {
+  const date = document.getElementById('entry-date').value;
+  const time = document.getElementById('entry-time').value;
+  const el   = document.getElementById('date-display');
+  if (!date) { el.textContent = ''; return; }
+  const [y,m,d] = date.split('-');
+  const dow = DOW[new Date(date + 'T00:00:00').getDay()];
+  el.textContent = `${y}年${+m}月${+d}日(${dow})${time ? ' ' + time : ''}`;
+}
+
+async function initRecord() {
+  const now = new Date();
+  document.getElementById('entry-date').value = todayStr();
+  document.getElementById('entry-time').value = p2(now.getHours()) + ':' + p2(now.getMinutes());
+  updateDateDisplay();
+  selectedTags = [];
+  await refreshTagSelector();
+}
+
+document.getElementById('entry-date').addEventListener('input', updateDateDisplay);
+document.getElementById('entry-time').addEventListener('input', updateDateDisplay);
+
+async function refreshTagSelector() {
+  const tags = await getAllTags();
+  const el   = document.getElementById('tag-selector');
+  el.innerHTML = '';
+  if (!tags.length) {
+    el.innerHTML = '<span style="color:var(--text-dim);font-size:13px">設定タブでタグを追加してください</span>';
+    return;
+  }
+
+  // タグを記録数の多い順にソート（件数は表示しない）
+  const tagCountMap = {};
+  allEntries.forEach(e => {
+    if (e.tags) e.tags.forEach(t => { tagCountMap[t] = (tagCountMap[t] || 0) + 1; });
+  });
+  const sortedTags = tags
+    .map(t => ({ name: t, count: tagCountMap[t] || 0 }))
+    .sort((a, b) => b.count - a.count)
+    .map(t => t.name);
+
+  sortedTags.forEach(tag => {
+    const c = document.createElement('div');
+    c.className = 'tag-chip' + (selectedTags.includes(tag) ? ' selected' : '');
+    c.textContent = tag;
+    c.addEventListener('click', () => {
+      if (selectedTags.includes(tag)) {
+        selectedTags = selectedTags.filter(t => t !== tag);
+        c.classList.remove('selected');
+      } else {
+        selectedTags.push(tag);
+        c.classList.add('selected');
+      }
+    });
+    el.appendChild(c);
+  });
+}
+
+document.getElementById('save-btn').addEventListener('click', async () => {
+  const date    = document.getElementById('entry-date').value;
+  const time    = document.getElementById('entry-time').value;
+  const comment = document.getElementById('entry-comment').value.trim();
+  if (!date) { toast('日付を選択してください'); return; }
+  if (!comment && selectedTags.length === 0) { toast('タグまたはメモを入力してください'); return; }
+
+  await addEntry({ date, time: time || '', tags: [...selectedTags], comment, createdAt: Date.now() });
+  allEntries = await getAllEntries();
+
+  selectedTags = [];
+  const now = new Date();
+  document.getElementById('entry-date').value = todayStr();
+  document.getElementById('entry-time').value = p2(now.getHours()) + ':' + p2(now.getMinutes());
+  document.getElementById('entry-comment').value = '';
+  updateDateDisplay();
+  await refreshTagSelector();
+  toast('記録しました ✓');
+});
+
+// ====================================================
+//  Tab: 一覧
+// ====================================================
+async function renderList() {
+  const tags = await getAllTags();
+  const bar  = document.getElementById('filter-bar');
+  bar.innerHTML = '';
+
+  // Build count map
+  const tagCountMap = {};
+  let noTagCount = 0;
+  allEntries.forEach(e => {
+    if (!e.tags || e.tags.length === 0) { noTagCount++; return; }
+    e.tags.forEach(t => { tagCountMap[t] = (tagCountMap[t] || 0) + 1; });
+  });
+
+  // Sort tags by count descending
+  const sortedTags = tags
+    .map(t => ({ name: t, count: tagCountMap[t] || 0 }))
+    .sort((a, b) => b.count - a.count);
+
+  // "すべて" chip
+  const all = document.createElement('div');
+  all.className = 'filter-chip' + (activeFilter === null ? ' active' : '');
+  all.textContent = 'すべて';
+  all.addEventListener('click', () => { activeFilter = null; renderList(); });
+  bar.appendChild(all);
+
+  // "タグなし" chip
+  const noTag = document.createElement('div');
+  noTag.className = 'filter-chip' + (activeFilter === FILTER_NO_TAG ? ' active' : '');
+  noTag.textContent = `タグなし (${noTagCount})`;
+  noTag.addEventListener('click', () => { activeFilter = FILTER_NO_TAG; renderList(); });
+  bar.appendChild(noTag);
+
+  // Tag chips with counts
+  sortedTags.forEach(tag => {
+    const c = document.createElement('div');
+    c.className = 'filter-chip' + (activeFilter === tag.name ? ' active' : '');
+    c.textContent = `${tag.name} (${tag.count})`;
+    c.addEventListener('click', () => { activeFilter = tag.name; renderList(); });
+    bar.appendChild(c);
+  });
+
+  // Filter entries
+  const filtered = activeFilter === FILTER_NO_TAG
+    ? allEntries.filter(e => !e.tags || e.tags.length === 0)
+    : activeFilter
+      ? allEntries.filter(e => e.tags && e.tags.includes(activeFilter))
+      : allEntries;
+
+  const list = document.getElementById('entries-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">記録がありません</div>';
+    return;
+  }
+  list.innerHTML = '';
+  filtered.forEach(entry => {
+    const card = document.createElement('div');
+    card.className = 'entry-card';
+    const timeStr   = entry.time ? ` ${entry.time}` : '';
+    const tagsHtml  = entry.tags && entry.tags.length
+      ? `<div class="entry-tags">${entry.tags.map(t=>`<span class="entry-tag">${esc(t)}</span>`).join('')}</div>`
+      : '';
+    const commentHtml = entry.comment
+      ? `<div class="entry-comment">${esc(entry.comment)}</div>`
+      : '';
+    card.innerHTML = `
+      <div class="entry-header">
+        <span class="entry-date">${jpDate(entry.date)}${esc(timeStr)}</span>
+        <span class="entry-dow">${getDow(entry.date)}</span>
+      </div>
+      ${tagsHtml}${commentHtml}
+      <button class="entry-edit" title="編集">✎</button>
+      <button class="entry-delete" title="削除">×</button>`;
+    card.querySelector('.entry-edit').addEventListener('click', () => {
+      openEditModal(entry, () => renderList());
+    });
+    card.querySelector('.entry-delete').addEventListener('click', async () => {
+      const ok = await confirmDialog('この記録を削除しますか？');
+      if (!ok) return;
+      await deleteEntryById(entry.id);
+      allEntries = await getAllEntries();
+      renderList();
+    });
+    list.appendChild(card);
+  });
+}
+
+// ====================================================
+//  Tab: カレンダー
+// ====================================================
+async function renderCalendar() {
+  const monthPfx     = `${calYear}-${p2(calMonth+1)}`;
+  const monthEntries = allEntries.filter(e => e.date.startsWith(monthPfx));
+  document.getElementById('cal-month-label').textContent =
+    `${calYear}年 ${calMonth+1}月 (${monthEntries.length}件)`;
+
+  // 今月ボタン: 当月ならdisabled
+  const nowForBtn = new Date();
+  const isCurrentMonth = calYear === nowForBtn.getFullYear() && calMonth === nowForBtn.getMonth();
+  document.getElementById('cal-today-btn').disabled = isCurrentMonth;
+
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  const holidays = getJpHolidays(calYear);
+
+  // Day-of-week headers
+  ['日','月','火','水','木','金','土'].forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow' + (i === 0 ? ' dow-sun' : i === 6 ? ' dow-sat' : '');
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  // Build day count map
+  const dayCountMap = {};
+  monthEntries.forEach(e => { dayCountMap[e.date] = (dayCountMap[e.date] || 0) + 1; });
+  const vals = Object.values(dayCountMap);
+  const maxCount = vals.length ? Math.max(...vals) : 1;
+
+  const today      = todayStr();
+  const firstDow   = new Date(calYear, calMonth, 1).getDay();
+  const daysInMon  = new Date(calYear, calMonth+1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  const lightMode  = isLightMode();
+  const heatRgb    = lightMode ? '139,106,62' : '200,169,126';
+
+  // Prev month padding
+  for (let i = firstDow - 1; i >= 0; i--) {
+    const el = document.createElement('div');
+    el.className = 'cal-day other-month';
+    el.innerHTML = `<span class="cal-num">${daysInPrev - i}</span>`;
+    grid.appendChild(el);
+  }
+
+  // Current month
+  for (let d = 1; d <= daysInMon; d++) {
+    const ds    = `${calYear}-${p2(calMonth+1)}-${p2(d)}`;
+    const dow   = new Date(calYear, calMonth, d).getDay();
+    const count = dayCountMap[ds] || 0;
+    const isHol = holidays.has(ds);
+
+    let cls = 'cal-day';
+    if (ds === today)     cls += ' today';
+    if (count > 0)        cls += ' has-entry';
+    if (ds === calSelected) cls += ' selected';
+    if (dow === 6)        cls += ' is-saturday';
+    if (dow === 0)        cls += ' is-sunday';
+    if (isHol && dow !== 0) cls += ' is-holiday';
+
+    const el = document.createElement('div');
+    el.className = cls;
+    el.innerHTML = `<span class="cal-num">${d}</span>`;
+
+    if (count > 0) {
+      el.innerHTML += `<span class="cal-count">${count}</span>`;
+      const intensity = count / maxCount;
+      el.style.backgroundColor = `rgba(${heatRgb},${(0.08 + intensity * 0.32).toFixed(3)})`;
+    }
+
+    el.addEventListener('click', () => { calSelected = ds; renderCalendar(); });
+    grid.appendChild(el);
+  }
+
+  // Next month padding
+  const total = firstDow + daysInMon;
+  const rem   = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= rem; d++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day other-month';
+    el.innerHTML = `<span class="cal-num">${d}</span>`;
+    grid.appendChild(el);
+  }
+
+  // Detail panel
+  const detail = document.getElementById('cal-detail');
+  if (!calSelected) {
+    detail.innerHTML = '<div class="empty" style="padding:16px 0">日付をタップして詳細を表示</div>';
+    return;
+  }
+  const dayEntries = allEntries.filter(e => e.date === calSelected);
+  detail.innerHTML = `<div class="cal-detail-title">${jpDate(calSelected)} ${getDow(calSelected)}</div>`;
+  if (!dayEntries.length) {
+    detail.innerHTML += '<div class="empty" style="padding:12px 0">記録なし</div>';
+    return;
+  }
+  dayEntries.forEach(entry => {
+    const card = document.createElement('div');
+    card.className = 'entry-card';
+    const timeHtml = entry.time
+      ? `<div class="entry-header"><span class="entry-date">${esc(entry.time)}</span></div>`
+      : '';
+    const tagsHtml = entry.tags && entry.tags.length
+      ? `<div class="entry-tags">${entry.tags.map(t=>`<span class="entry-tag">${esc(t)}</span>`).join('')}</div>`
+      : '';
+    const commentHtml = entry.comment
+      ? `<div class="entry-comment">${esc(entry.comment)}</div>`
+      : '';
+    card.innerHTML = timeHtml + tagsHtml + commentHtml +
+      `<button class="entry-edit" title="編集">✎</button>` +
+      `<button class="entry-delete" title="削除">×</button>`;
+    card.querySelector('.entry-edit').addEventListener('click', () => {
+      openEditModal(entry, () => renderCalendar());
+    });
+    card.querySelector('.entry-delete').addEventListener('click', async () => {
+      const ok = await confirmDialog('この記録を削除しますか？');
+      if (!ok) return;
+      await deleteEntryById(entry.id);
+      allEntries = await getAllEntries();
+      renderCalendar();
+    });
+    detail.appendChild(card);
+  });
+}
+
+document.getElementById('cal-prev').addEventListener('click', () => {
+  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+  calSelected = null; renderCalendar();
+});
+document.getElementById('cal-next').addEventListener('click', () => {
+  calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
+  calSelected = null; renderCalendar();
+});
+document.getElementById('cal-today-btn').addEventListener('click', () => {
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+  calSelected = todayStr(); renderCalendar();
+});
+
+document.getElementById('chart-prev').addEventListener('click', () => {
+  chartOffset--; renderChart();
+});
+document.getElementById('chart-next').addEventListener('click', () => {
+  chartOffset++; renderChart();
+});
+
+// ====================================================
+//  Tab: グラフ
+// ====================================================
+async function renderChart() {
+  const area = document.getElementById('chart-area');
+  area.innerHTML = '';
+
+  const now = new Date();
+  const refDate = new Date(now.getFullYear(), now.getMonth() + chartOffset, 1);
+  const months = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
+    months.push({
+      year:  d.getFullYear(),
+      month: d.getMonth() + 1,
+      pfx:   `${d.getFullYear()}-${p2(d.getMonth()+1)}`,
+      label: `${d.getMonth()+1}月`
+    });
+  }
+
+  // 範囲ラベル
+  const first = months[0], last = months[months.length - 1];
+  document.getElementById('chart-range-label').textContent =
+    `${first.year}年${first.month}月〜${last.year}年${last.month}月`;
+
+  const counts   = months.map(m => allEntries.filter(e => e.date.startsWith(m.pfx)).length);
+  const maxCount = Math.max(1, ...counts);
+  const BAR_MAX  = 160;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'chart-wrap';
+
+  months.forEach((m, i) => {
+    const count    = counts[i];
+    const barH     = count > 0 ? Math.max(4, Math.round((count / maxCount) * BAR_MAX)) : 2;
+    const isCurrent = m.year === now.getFullYear() && m.month === now.getMonth() + 1;
+    const col = document.createElement('div');
+    col.className = 'chart-col';
+    col.innerHTML = `
+      <span class="chart-count-label">${count > 0 ? count : ''}</span>
+      <div class="chart-bar${isCurrent ? ' this-month' : ''}" style="height:${barH}px"></div>`;
+    wrap.appendChild(col);
+  });
+  area.appendChild(wrap);
+
+  const labelsRow = document.createElement('div');
+  labelsRow.className = 'chart-labels';
+  months.forEach(m => {
+    const c = document.createElement('div');
+    c.className = 'chart-label-col';
+    c.textContent = m.month === 1 ? `${m.year}\n${m.label}` : m.label;
+    labelsRow.appendChild(c);
+  });
+  area.appendChild(labelsRow);
+
+  // ── 時間帯別円グラフ ──
+  const pieSection = document.createElement('div');
+  pieSection.className = 'pie-section';
+
+  const pieTitle = document.createElement('div');
+  pieTitle.className = 'pie-section-title';
+  pieTitle.textContent = '時間帯別の割合（表示中の12ヶ月）';
+  pieSection.appendChild(pieTitle);
+
+  // 表示中の12ヶ月のエントリーを抽出
+  const visiblePfxSet = new Set(months.map(m => m.pfx));
+  const visibleEntries = allEntries.filter(e => visiblePfxSet.has(e.date.slice(0, 7)));
+
+  // 時刻ありのエントリーのみで集計
+  const timedEntries = visibleEntries.filter(e => e.time && e.time.length >= 4);
+
+  if (!timedEntries.length) {
+    const noData = document.createElement('div');
+    noData.className = 'pie-no-data';
+    noData.textContent = '時刻が記録されたデータがありません';
+    pieSection.appendChild(noData);
+  } else {
+    const slots = [
+      { label: '朝', desc: '6〜12時', color: '#E8A857', count: 0 },
+      { label: '昼', desc: '12〜18時', color: '#7AAE8C', count: 0 },
+      { label: '夜', desc: '18〜24時', color: '#5B8FCF', count: 0 },
+      { label: '深夜', desc: '0〜6時',  color: '#9B7EC8', count: 0 },
+    ];
+    timedEntries.forEach(e => {
+      const h = parseInt(e.time.slice(0, 2), 10);
+      if (h >= 6  && h < 12) slots[0].count++;
+      else if (h >= 12 && h < 18) slots[1].count++;
+      else if (h >= 18)           slots[2].count++;
+      else                        slots[3].count++;
+    });
+
+    const total = timedEntries.length;
+    let deg = 0;
+    const gradientParts = [];
+    slots.forEach(s => {
+      const angle = (s.count / total) * 360;
+      if (angle > 0) {
+        gradientParts.push(`${s.color} ${deg.toFixed(2)}deg ${(deg + angle).toFixed(2)}deg`);
+        deg += angle;
+      }
+    });
+
+    const pieLayout = document.createElement('div');
+    pieLayout.className = 'pie-layout';
+
+    const pieEl = document.createElement('div');
+    pieEl.className = 'pie-chart';
+    pieEl.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+    pieLayout.appendChild(pieEl);
+
+    const legend = document.createElement('div');
+    legend.className = 'pie-legend';
+    slots.forEach(s => {
+      const pct = total > 0 ? Math.round((s.count / total) * 100) : 0;
+      const item = document.createElement('div');
+      item.className = 'pie-legend-item';
+      item.innerHTML = `
+        <span class="pie-legend-dot" style="background:${s.color}"></span>
+        <span>${s.label} <span style="font-size:10px;color:var(--text-dim)">${s.desc}</span></span>
+        <span class="pie-legend-pct">${s.count}件 (${pct}%)</span>`;
+      legend.appendChild(item);
+    });
+    pieLayout.appendChild(legend);
+    pieSection.appendChild(pieLayout);
+  }
+  area.appendChild(pieSection);
+}
+
+// ====================================================
+//  Tab: 設定
+// ====================================================
+async function renderSettings() {
+  const tags      = await getAllTags();
+  const thisMonth = allEntries.filter(e => e.date.startsWith(todayStr().slice(0,7))).length;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${allEntries.length}</div><div class="stat-label">総記録数</div></div>
+    <div class="stat-card"><div class="stat-num">${thisMonth}</div><div class="stat-label">今月の記録</div></div>
+    <div class="stat-card"><div class="stat-num">${tags.length}</div><div class="stat-label">タグ数</div></div>`;
+
+  // Theme buttons
+  const currentMode = localStorage.getItem('theme-mode') || 'system';
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === currentMode);
+    btn.onclick = () => {
+      applyTheme(btn.dataset.mode);
+      document.querySelectorAll('.theme-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.mode === btn.dataset.mode));
+    };
+  });
+
+  renderTagManage(tags);
+}
+
+function renderTagManage(tags) {
+  const wrap = document.getElementById('tag-manage-wrap');
+  wrap.innerHTML = '';
+  if (!tags.length) {
+    wrap.innerHTML = '<span style="color:var(--text-dim);font-size:13px">まだタグがありません</span>';
+    return;
+  }
+  tags.forEach(tag => {
+    const item = document.createElement('div');
+    item.className = 'tag-m-item';
+    item.innerHTML = `<span class="tag-m-name">${esc(tag)}</span><button class="tag-m-del">×</button>`;
+    item.querySelector('.tag-m-del').addEventListener('click', async () => {
+      const usageCount = allEntries.filter(e => e.tags && e.tags.includes(tag)).length;
+
+      if (usageCount > 0) {
+        const first = await confirmDialog(
+          `「${tag}」は${usageCount}件の記録で使われています。\n削除してもよいですか？`,
+          '次へ'
+        );
+        if (!first) return;
+        const second = await confirmDialog(
+          `「${tag}」を本当に削除しますか？\nこのタグが付いた記録からも削除されます。`,
+          '削除'
+        );
+        if (!second) return;
+        // Remove tag from all entries that use it
+        await new Promise(res => {
+          const tx = db.transaction('entries', 'readwrite');
+          const s  = tx.objectStore('entries');
+          s.getAll().onsuccess = e => {
+            for (const entry of e.target.result) {
+              if (entry.tags && entry.tags.includes(tag)) {
+                entry.tags = entry.tags.filter(t => t !== tag);
+                s.put(entry);
+              }
+            }
+            tx.oncomplete = () => res();
+          };
+        });
+        allEntries = await getAllEntries();
+      } else {
+        const ok = await confirmDialog(`「${tag}」を削除しますか？`);
+        if (!ok) return;
+      }
+
+      if (activeFilter === tag) activeFilter = null;
+      await deleteTagByName(tag);
+      refreshTagSelector();
+      renderSettings();
+    });
+    wrap.appendChild(item);
+  });
+}
+
+document.getElementById('add-tag-btn').addEventListener('click', async () => {
+  const input = document.getElementById('new-tag-input');
+  const name  = input.value.trim();
+  if (!name) return;
+  if ([...name].length > 20) {
+    document.getElementById('tag-length-warn').style.display = 'block';
+    return;
+  }
+  document.getElementById('tag-length-warn').style.display = 'none';
+  await putTag(name);
+  input.value = '';
+  refreshTagSelector();
+  renderSettings();
+  toast('タグを追加しました');
+});
+
+document.getElementById('new-tag-input').addEventListener('input', e => {
+  const len = [...e.target.value].length;
+  document.getElementById('tag-length-warn').style.display = len > 20 ? 'block' : 'none';
+});
+
+document.getElementById('new-tag-input').addEventListener('keypress', e => {
+  if (e.key === 'Enter') document.getElementById('add-tag-btn').click();
+});
+
+// ====================================================
+//  Backup
+// ====================================================
+document.getElementById('export-btn').addEventListener('click', async () => {
+  const entries = await getAllEntries();
+  const tags    = await getAllTags();
+  const payload = { version: 1, exportedAt: new Date().toISOString(), entries, tags };
+  const blob    = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url     = URL.createObjectURL(blob);
+  const a       = document.createElement('a');
+  a.href        = url;
+  a.download    = `tagmemo_${todayStr().replace(/-/g,'')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('エクスポートしました ✓');
+});
+
+document.getElementById('import-btn').addEventListener('click', () => {
+  document.getElementById('import-file').click();
+});
+
+document.getElementById('import-file').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  let data;
+  try { data = JSON.parse(await file.text()); } catch { toast('ファイルが無効です'); return; }
+  if (!data.entries || !Array.isArray(data.entries)) { toast('データ形式が無効です'); return; }
+  const ok = await confirmDialog(
+    `${data.entries.length}件の記録をインポートします（既存データにマージ）。よろしいですか？`,
+    'インポート'
+  );
+  if (!ok) return;
+
+  const entryStore = store('entries', 'readwrite');
+  for (const entry of data.entries) {
+    const { id, ...rest } = entry;
+    entryStore.add(rest);
+  }
+  if (data.tags) for (const tag of data.tags) await putTag(tag);
+
+  allEntries = await getAllEntries();
+  toast(`${data.entries.length}件をインポートしました ✓`);
+  e.target.value = '';
+  await refreshTagSelector();
+  renderSettings();
+});
+
+document.getElementById('import-fresh-btn').addEventListener('click', () => {
+  document.getElementById('import-file-fresh').click();
+});
+
+document.getElementById('import-file-fresh').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  let data;
+  try { data = JSON.parse(await file.text()); } catch { toast('ファイルが無効です'); return; }
+  if (!data.entries || !Array.isArray(data.entries)) { toast('データ形式が無効です'); return; }
+  const ok = await confirmDialog(
+    `既存データをすべて削除し、${data.entries.length}件の記録で上書きします。この操作は取り消せません。よろしいですか？`,
+    '完全置換インポート'
+  );
+  if (!ok) return;
+
+  await clearStore('entries');
+  await clearStore('tags');
+  const entryStore = store('entries', 'readwrite');
+  for (const entry of data.entries) {
+    const { id, ...rest } = entry;
+    entryStore.add(rest);
+  }
+  if (data.tags) for (const tag of data.tags) await putTag(tag);
+
+  allEntries = await getAllEntries();
+  toast(`${data.entries.length}件で上書きインポートしました ✓`);
+  e.target.value = '';
+  await refreshTagSelector();
+  renderSettings();
+});
+
+// ====================================================
+//  Tab switching
+// ====================================================
+const TAB_META = {
+  record:   { title: 'Tag-Memo',   sub: '記録する' },
+  list:     { title: '一覧',       sub: 'すべての記録' },
+  calendar: { title: 'カレンダー', sub: '日付から探す' },
+  chart:    { title: 'グラフ',     sub: '月別記録数' },
+  settings: { title: '設定',       sub: 'タグ管理・バックアップ' },
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`panel-${tab}`).classList.add('active');
+    document.getElementById('header-title').textContent = TAB_META[tab].title;
+    document.getElementById('header-sub').textContent   = TAB_META[tab].sub;
+    document.getElementById('content').scrollTop = 0;
+
+    if (tab === 'list')     await renderList();
+    if (tab === 'calendar') await renderCalendar();
+    if (tab === 'chart')    await renderChart();
+    if (tab === 'settings') await renderSettings();
+  });
+});
+
+// ====================================================
+//  Boot
+// ====================================================
+(async () => {
+  await openDB();
+  allEntries = await getAllEntries();
+  await initRecord();
+})();
+
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible') {
+    await ensureDB();
+  }
+});
+</script>
+</body>
+</html>
