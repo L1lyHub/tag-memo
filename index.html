@@ -14,68 +14,91 @@
   <title>Tag-Memo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap" rel="stylesheet"></noscript>
   <style>
     :root {
       --safe-top: env(safe-area-inset-top, 44px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --font: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Hiragino Sans', sans-serif;
     }
     :root, [data-theme="dark"] {
-      --bg: #0E0D0B;
-      --surface: #1A1916;
-      --surface2: #232118;
-      --border: #2E2B24;
-      --border2: #3A3730;
-      --accent: #C8A97E;
-      --accent-dim: rgba(200,169,126,0.12);
-      --accent-glow: rgba(200,169,126,0.06);
-      --text: #EDE8DF;
-      --text-dim: #6E6A62;
-      --text-mid: #9A9488;
-      --danger: #C47B6A;
-      --success: #7AAE8C;
-      --tag-bg: #221F19;
+      --bg: #18171F;
+      --surface: #211F2A;
+      --surface2: #2A2835;
+      --border: #34313F;
+      --border2: #423E50;
+      --accent: #B8ADF0;
+      --accent-rgb: 184,173,240;
+      --accent-dim: #36304F;
+      --accent-glow: rgba(184,173,240,0.06);
+      --on-accent: #251E4A;
+      --text: #ECEAF4;
+      --text-dim: #9692AA;
+      --text-mid: #B2AEC4;
+      --danger: #F08F96;
+      --on-danger: #3B1216;
+      --success: #8CC7A0;
+      --tag-bg: #2A2835;
+      --sat: #9BBDF3;
+      --sun: #F59CA3;
+      --overlay: rgba(0,0,0,0.55);
     }
     [data-theme="light"] {
-      --bg: #F5F2ED;
+      --bg: #F7F6FB;
       --surface: #FFFFFF;
-      --surface2: #EDE9E2;
-      --border: #D6D0C8;
-      --border2: #C4BCAF;
-      --accent: #8B6A3E;
-      --accent-dim: rgba(139,106,62,0.22);
-      --accent-glow: rgba(139,106,62,0.05);
-      --text: #1C1A17;
-      --text-dim: #8A8277;
-      --text-mid: #5C574F;
-      --danger: #B5392A;
-      --success: #3A7A54;
-      --tag-bg: #EDE9E2;
+      --surface2: #EFEDF7;
+      --border: #E4E1F0;
+      --border2: #D6D1E8;
+      --accent: #6152AD;
+      --accent-rgb: 97,82,173;
+      --accent-dim: #E9E4FA;
+      --accent-glow: rgba(97,82,173,0.05);
+      --on-accent: #FFFFFF;
+      --text: #312E3D;
+      --text-dim: #706C84;
+      --text-mid: #565268;
+      --danger: #C2434F;
+      --on-danger: #FFFFFF;
+      --success: #3E7D5A;
+      --tag-bg: #EFEDF7;
+      --sat: #2A58A3;
+      --sun: #AE2F3C;
+      --overlay: rgba(36,32,56,0.4);
     }
     @media (prefers-color-scheme: light) {
       [data-theme="system"] {
-        --bg: #F5F2ED;
+        --bg: #F7F6FB;
         --surface: #FFFFFF;
-        --surface2: #EDE9E2;
-        --border: #D6D0C8;
-        --border2: #C4BCAF;
-        --accent: #8B6A3E;
-        --accent-dim: rgba(139,106,62,0.22);
-        --accent-glow: rgba(139,106,62,0.05);
-        --text: #1C1A17;
-        --text-dim: #8A8277;
-        --text-mid: #5C574F;
-        --danger: #B5392A;
-        --success: #3A7A54;
-        --tag-bg: #EDE9E2;
+        --surface2: #EFEDF7;
+        --border: #E4E1F0;
+        --border2: #D6D1E8;
+        --accent: #6152AD;
+        --accent-rgb: 97,82,173;
+        --accent-dim: #E9E4FA;
+        --accent-glow: rgba(97,82,173,0.05);
+        --on-accent: #FFFFFF;
+        --text: #312E3D;
+        --text-dim: #706C84;
+        --text-mid: #565268;
+        --danger: #C2434F;
+        --on-danger: #FFFFFF;
+        --success: #3E7D5A;
+        --tag-bg: #EFEDF7;
+        --sat: #2A58A3;
+        --sun: #AE2F3C;
+        --overlay: rgba(36,32,56,0.4);
       }
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; overscroll-behavior: none; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; overscroll-behavior: none; }
+    button, input, textarea { font-family: inherit; }
 
     #app { display: flex; flex-direction: column; height: 100%; max-height: 100vh; }
+    /* iOS のホーム画面アプリで、ページの高さがステータスバーの分だけ短く計算されるときの補正（fixStandaloneHeight） */
+    .vh-fix #app { position: fixed; top: 0; left: 0; width: 100%; height: var(--app-h); max-height: none; }
+    .vh-fix #modal-overlay, .vh-fix #edit-modal-overlay { height: var(--app-h); }
 
     .header {
       padding: calc(var(--safe-top) + 12px) 20px 14px;
@@ -84,8 +107,14 @@
       display: flex; align-items: center; justify-content: space-between;
       flex-shrink: 0;
     }
-    .header-title { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 400; color: var(--accent); letter-spacing: 0.1em; }
-    .header-sub { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; margin-top: 2px; }
+    /* iOS のホーム画面アプリでは、ステータスバーの下の帯（約 38pt）もぼかされるので、タイトルをその下まで下げる */
+    @media (display-mode: standalone) {
+      @supports (-webkit-touch-callout: none) {
+        .header { padding-top: calc(var(--safe-top) + 40px); }
+      }
+    }
+    .header-title { font-size: 20px; font-weight: 500; color: var(--text); letter-spacing: 0.02em; }
+    .header-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
 
     .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
@@ -97,11 +126,11 @@
     }
     .tab-btn {
       flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-      padding: 10px 2px 6px; background: none; border: none; color: var(--text-dim);
-      font-size: 9px; font-family: 'Noto Sans JP', sans-serif; cursor: pointer;
-      transition: color 0.2s; letter-spacing: 0.04em;
+      padding: 9px 2px 6px; background: none; border: none; color: var(--text-dim);
+      font-size: 11px; cursor: pointer;
+      transition: color 0.2s;
     }
-    .tab-btn.active { color: var(--accent); }
+    .tab-btn.active { color: var(--accent); font-weight: 500; }
     .tab-btn svg { width: 22px; height: 22px; }
 
     .panel { display: none; padding: 18px 16px; min-height: 100%; }
@@ -109,36 +138,36 @@
 
     /* ── Form ── */
     .form-section { margin-bottom: 18px; }
-    .form-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .form-label { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; display: block; }
     .date-input {
       padding: 13px 14px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--text); font-size: 16px; font-family: 'Noto Sans JP', sans-serif;
+      border-radius: 14px; color: var(--text); font-size: 16px;
       -webkit-appearance: none; outline: none;
     }
     .date-input:focus { border-color: var(--accent); }
-    .date-display { font-size: 12px; color: var(--text-dim); margin-top: 6px; letter-spacing: 0.04em; min-height: 16px; }
+    .date-display { font-size: 12px; color: var(--text-dim); margin-top: 6px; min-height: 16px; }
     @media (min-width: 768px) { .date-display { display: none; } }
 
     .tags-grid { display: flex; flex-wrap: nowrap; gap: 8px; padding-bottom: 4px; width: max-content; }
     .tag-chip {
-      padding: 8px 14px; background: var(--tag-bg); border: 1px solid var(--border2);
-      border-radius: 20px; font-size: 13px; color: var(--text-mid); cursor: pointer;
+      padding: 8px 15px; background: var(--tag-bg); border: 1px solid transparent;
+      border-radius: 999px; font-size: 13px; color: var(--text-mid); cursor: pointer;
       transition: all 0.15s; user-select: none; -webkit-user-select: none; white-space: nowrap;
     }
     .tag-chip.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
 
     .comment-input {
       width: 100%; padding: 13px 14px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--text); font-size: 16px; font-family: 'Noto Sans JP', sans-serif;
+      border-radius: 14px; color: var(--text); font-size: 16px;
       resize: none; min-height: 110px; outline: none; line-height: 1.7;
     }
     .comment-input:focus { border-color: var(--accent); }
     .comment-input::placeholder { color: var(--text-dim); }
 
     .btn-primary {
-      width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 10px;
-      color: #1a1612; font-size: 15px; font-family: 'Noto Sans JP', sans-serif; font-weight: 500;
-      cursor: pointer; transition: opacity 0.15s; letter-spacing: 0.06em;
+      width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 14px;
+      color: var(--on-accent); font-size: 15px; font-weight: 500;
+      cursor: pointer; transition: opacity 0.15s;
     }
     .btn-primary:active { opacity: 0.75; }
 
@@ -147,23 +176,23 @@
     .filter-bar { display: flex; gap: 7px; padding-bottom: 4px; width: max-content; }
     .filter-chip {
       padding: 6px 13px; background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 16px; font-size: 12px; color: var(--text-dim); cursor: pointer; white-space: nowrap;
+      border-radius: 999px; font-size: 12px; color: var(--text-mid); cursor: pointer; white-space: nowrap;
       transition: all 0.15s;
     }
-    .filter-chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+    .filter-chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
 
     .entry-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px 14px 12px; margin-bottom: 10px;
+      border-radius: 16px; padding: 14px 14px 12px; margin-bottom: 10px;
       position: relative; transition: border-color 0.15s;
     }
     .entry-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
-    .entry-date { font-size: 12px; color: var(--text-dim); letter-spacing: 0.04em; }
+    .entry-date { font-size: 12px; color: var(--text-dim); }
     .entry-dow { font-size: 11px; color: var(--text-dim); }
     .entry-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
     .entry-tag {
-      font-size: 11px; padding: 3px 9px; background: var(--accent-dim); color: var(--accent);
-      border-radius: 10px; border: 1px solid rgba(200,169,126,0.18);
+      font-size: 11px; padding: 3px 10px; background: var(--accent-dim); color: var(--accent);
+      border-radius: 999px; font-weight: 500;
     }
     .entry-comment { font-size: 14px; color: var(--text); line-height: 1.7; white-space: pre-wrap; word-break: break-all; }
     .entry-delete {
@@ -181,12 +210,12 @@
 
     /* ── Edit Modal ── */
     .edit-modal-inner {
-      background: var(--surface); border: 1px solid var(--border2); border-radius: 16px;
+      background: var(--surface); border: 1px solid var(--border2); border-radius: 20px;
       padding: 20px 18px; margin: 0 16px; max-width: 420px; width: 100%;
       max-height: 85vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
     }
-    .edit-modal-title { font-size: 14px; font-weight: 500; color: var(--accent); margin-bottom: 16px; letter-spacing: 0.04em; }
-    .edit-modal-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px; display: block; margin-top: 14px; }
+    .edit-modal-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 16px; }
+    .edit-modal-label { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; display: block; margin-top: 14px; }
     .edit-modal-label:first-of-type { margin-top: 0; }
     .edit-tags-grid { display: flex; flex-wrap: nowrap; gap: 8px; padding-bottom: 4px; width: max-content; }
     .edit-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
@@ -197,70 +226,70 @@
       margin-bottom: 16px;
     }
     .cal-month-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .cal-month { font-family: 'Noto Serif JP', serif; font-size: 16px; color: var(--accent); letter-spacing: 0.04em; }
+    .cal-month { font-size: 16px; font-weight: 500; color: var(--text); }
     .cal-arrow {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
       color: var(--text-mid); font-size: 18px; cursor: pointer; padding: 8px 14px; line-height: 1;
     }
     .cal-arrow:active { background: var(--surface2); }
     .cal-today-btn {
-      background: var(--surface); border: 1px solid var(--accent); border-radius: 8px;
+      background: var(--surface); border: 1px solid var(--accent); border-radius: 999px;
       color: var(--accent); font-size: 12px; cursor: pointer; padding: 6px 12px; line-height: 1;
-      font-family: 'Noto Sans JP', sans-serif; white-space: nowrap;
+      white-space: nowrap;
     }
     .cal-today-btn:active { opacity: 0.7; }
     .cal-today-btn:disabled { opacity: 0.35; cursor: default; border-color: var(--border); color: var(--text-dim); }
     .cal-today-btn:disabled:active { opacity: 0.35; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-    .cal-dow { text-align: center; font-size: 10px; color: var(--text-dim); padding: 5px 0; }
-    .cal-dow.dow-sat { color: #5B8FCF; }
-    .cal-dow.dow-sun { color: #C45A5A; }
+    .cal-dow { text-align: center; font-size: 11px; color: var(--text-dim); padding: 5px 0; }
+    .cal-dow.dow-sat { color: var(--sat); }
+    .cal-dow.dow-sun { color: var(--sun); }
     .cal-day {
       aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 1px; padding: 2px;
-      border-radius: 8px; cursor: pointer; position: relative;
+      border-radius: 12px; cursor: pointer; position: relative;
       transition: background 0.12s; user-select: none; -webkit-user-select: none;
     }
     .cal-day.other-month { opacity: 0.18; pointer-events: none; }
     .cal-day.today { background: var(--surface2); }
     .cal-day:not(.has-entry) .cal-num { color: var(--text-dim); }
-    .cal-day.has-entry .cal-num { color: var(--accent); }
+    .cal-day.has-entry .cal-num { color: var(--text); }
     .cal-day.today .cal-num { color: var(--accent); font-weight: 500; }
     .cal-day.selected { border: 2px solid var(--accent); }
     .cal-day.selected .cal-num { color: var(--accent); }
     .cal-day:active:not(.other-month) { background: var(--surface2); }
-    .cal-day.is-saturday .cal-num { color: #5B8FCF !important; }
+    .cal-day.is-saturday .cal-num { color: var(--sat) !important; }
     .cal-day.is-sunday .cal-num,
-    .cal-day.is-holiday .cal-num { color: #C45A5A !important; }
+    .cal-day.is-holiday .cal-num { color: var(--sun) !important; }
     .cal-num { font-size: 13px; line-height: 1; }
-    .cal-count { font-size: 9px; color: var(--accent); opacity: 0.9; line-height: 1; }
+    .cal-count { font-size: 10px; color: var(--accent); font-weight: 500; line-height: 1; }
 
     .cal-detail { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 16px; }
-    .cal-detail-title { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; letter-spacing: 0.04em; }
+    .cal-detail-title { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
 
     /* ── Settings ── */
     .stats-row { display: flex; gap: 10px; margin-bottom: 22px; }
     .stat-card {
       flex: 1; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 14px 10px; text-align: center;
+      border-radius: 16px; padding: 14px 10px; text-align: center;
     }
-    .stat-num { font-family: 'Noto Serif JP', serif; font-size: 26px; color: var(--accent); line-height: 1; }
-    .stat-label { font-size: 10px; color: var(--text-dim); margin-top: 5px; letter-spacing: 0.06em; }
+    .stat-num { font-size: 24px; font-weight: 500; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 6px; }
 
-    .section-head { font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px; }
+    .section-head { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
 
     .theme-selector { display: flex; gap: 8px; margin-bottom: 20px; }
     .theme-btn {
       flex: 1; padding: 11px 8px; background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 10px; color: var(--text-mid); font-size: 13px; cursor: pointer;
-      font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
+      border-radius: 12px; color: var(--text-mid); font-size: 13px; cursor: pointer;
+      transition: all 0.15s;
     }
     .theme-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
 
     .tag-manage-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; margin-bottom: 14px; min-height: 20px; }
     .tag-m-item {
       display: flex; align-items: center; gap: 7px; padding: 7px 13px;
-      background: var(--surface); border: 1px solid var(--border2); border-radius: 20px;
+      background: var(--surface); border: 1px solid var(--border2); border-radius: 999px;
     }
     .tag-m-name { font-size: 13px; }
     .tag-m-del { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 17px; line-height: 1; padding: 0 2px; }
@@ -269,13 +298,13 @@
     .tag-add-row { display: flex; gap: 8px; }
     .tag-add-input {
       flex: 1; min-width: 0; padding: 12px 13px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--text); font-size: 16px; font-family: 'Noto Sans JP', sans-serif; outline: none;
+      border-radius: 14px; color: var(--text); font-size: 16px; outline: none;
     }
     .tag-add-input:focus { border-color: var(--accent); }
     .tag-add-input::placeholder { color: var(--text-dim); }
     .btn-add {
-      padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border2);
-      border-radius: 10px; color: var(--accent); font-size: 14px; cursor: pointer; white-space: nowrap;
+      padding: 12px 16px; background: var(--accent-dim); border: 1px solid transparent;
+      border-radius: 14px; color: var(--accent); font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap;
     }
     .btn-add:active { opacity: 0.7; }
 
@@ -283,12 +312,23 @@
 
     .backup-btn {
       width: 100%; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--text); font-size: 14px; font-family: 'Noto Sans JP', sans-serif;
+      border-radius: 16px; color: var(--text); font-size: 14px;
       cursor: pointer; margin-bottom: 9px; display: flex; align-items: center; gap: 14px; text-align: left;
     }
     .backup-btn:active { background: var(--surface2); }
-    .backup-icon { font-size: 20px; flex-shrink: 0; }
+    .backup-icon {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--accent-dim); color: var(--accent);
+    }
+    .backup-icon svg { width: 18px; height: 18px; }
     .backup-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .notice {
+      margin-top: 8px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 11px; color: var(--text-dim); line-height: 1.7;
+    }
+    .notice svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--text-mid); }
 
     /* ── Chart ── */
     .chart-wrap {
@@ -297,15 +337,15 @@
       margin-bottom: 4px; padding: 0 2px;
     }
     .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; }
-    .chart-bar { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; opacity: 0.6; min-height: 2px; }
+    .chart-bar { width: 100%; background: var(--accent); border-radius: 6px 6px 0 0; opacity: 0.45; min-height: 2px; }
     .chart-bar.this-month { opacity: 1; }
-    .chart-count-label { font-size: 9px; color: var(--text-mid); line-height: 1; }
+    .chart-count-label { font-size: 10px; color: var(--text-mid); line-height: 1; }
     .chart-labels { display: flex; gap: 4px; padding: 4px 2px 0; }
-    .chart-label-col { flex: 1; text-align: center; font-size: 8px; color: var(--text-dim); line-height: 1.4; white-space: pre-line; }
+    .chart-label-col { flex: 1; text-align: center; font-size: 10px; color: var(--text-dim); line-height: 1.4; white-space: pre-line; }
 
     /* ── Pie Chart ── */
     .pie-section { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 18px; }
-    .pie-section-title { font-size: 10px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; }
+    .pie-section-title { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; }
     .pie-layout { display: flex; align-items: center; gap: 20px; }
     .pie-chart { width: 100px; height: 100px; border-radius: 50%; flex-shrink: 0; }
     .pie-legend { display: flex; flex-direction: column; gap: 8px; }
@@ -317,24 +357,27 @@
     /* ── Modal ── */
     .btn-modal-cancel {
       padding: 10px 18px; background: var(--surface2); border: 1px solid var(--border2);
-      border-radius: 8px; color: var(--text-mid); font-size: 14px; cursor: pointer;
-      font-family: 'Noto Sans JP', sans-serif;
+      border-radius: 12px; color: var(--text-mid); font-size: 14px; cursor: pointer;
       touch-action: manipulation; -webkit-tap-highlight-color: transparent;
     }
     .btn-modal-ok {
       padding: 10px 18px; background: var(--danger); border: none;
-      border-radius: 8px; color: #fff; font-size: 14px; cursor: pointer;
-      font-family: 'Noto Sans JP', sans-serif;
+      border-radius: 12px; color: var(--on-danger); font-size: 14px; font-weight: 500; cursor: pointer;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .btn-modal-save {
+      padding: 10px 18px; background: var(--accent); border: none;
+      border-radius: 12px; color: var(--on-accent); font-size: 14px; font-weight: 500; cursor: pointer;
       touch-action: manipulation; -webkit-tap-highlight-color: transparent;
     }
 
     .empty { text-align: center; color: var(--text-dim); padding: 36px 16px; font-size: 13px; line-height: 1.8; }
 
     .toast {
-      position: fixed; bottom: calc(72px + var(--safe-bottom) + 8px); left: 50%;
+      position: fixed; bottom: calc(72px + var(--safe-bottom) + 8px - var(--vh-gap, 0px)); left: 50%;
       transform: translateX(-50%); background: var(--surface2);
       border: 1px solid var(--border2); color: var(--text);
-      padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 9999;
+      padding: 10px 20px; border-radius: 999px; font-size: 13px; z-index: 9999;
       opacity: 0; transition: opacity 0.25s; white-space: nowrap; pointer-events: none;
     }
     .toast.show { opacity: 1; }
@@ -381,7 +424,7 @@
         <label class="form-label">メモ</label>
         <textarea class="comment-input" id="entry-comment" placeholder="メモを入力..."></textarea>
       </div>
-      <button class="btn-primary" id="save-btn">記　録　す　る</button>
+      <button class="btn-primary" id="save-btn">記録する</button>
     </div>
 
     <!-- 一覧タブ -->
@@ -436,23 +479,36 @@
       <div class="divider"></div>
       <div class="section-head">バックアップ</div>
       <button class="backup-btn" id="export-btn">
-        <span class="backup-icon">⬆️</span>
+        <span class="backup-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"/>
+          </svg>
+        </span>
         <div><div>JSONエクスポート</div><div class="backup-desc">すべてのデータをファイルに保存</div></div>
       </button>
       <button class="backup-btn" id="import-btn">
-        <span class="backup-icon">⬇️</span>
+        <span class="backup-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"/>
+          </svg>
+        </span>
         <div><div>JSONインポート</div><div class="backup-desc">バックアップファイルから復元（マージ）</div></div>
       </button>
       <input type="file" id="import-file" accept=".json" style="display:none">
       <button class="backup-btn" id="import-fresh-btn">
-        <span class="backup-icon">⬇️</span>
+        <span class="backup-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7"/>
+          </svg>
+        </span>
         <div><div>JSONインポート（完全置換）</div><div class="backup-desc">既存データをすべて削除して上書き</div></div>
       </button>
       <input type="file" id="import-file-fresh" accept=".json" style="display:none">
-      <div style="margin-top:8px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;">
-        <div style="font-size:11px;color:var(--text-dim);line-height:1.7;">
-          ⚠️ iOSはSafariのキャッシュ削除でデータが消える場合があります。<br>定期的にエクスポートしてiCloud Driveに保存することを推奨します。
-        </div>
+      <div class="notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>
+        </svg>
+        <div>iOSはSafariのキャッシュ削除でデータが消える場合があります。<br>定期的にエクスポートしてiCloud Driveに保存することを推奨します。</div>
       </div>
     </div>
 
@@ -499,8 +555,8 @@
 <div class="toast" id="toast"></div>
 
 <!-- Modal overlay (replaces confirm()) -->
-<div id="modal-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;">
-  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px 20px;margin:0 24px;max-width:320px;width:100%;">
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:var(--overlay);align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:24px 20px;margin:0 24px;max-width:320px;width:100%;">
     <p id="modal-msg" style="font-size:14px;line-height:1.7;color:var(--text);margin-bottom:20px;white-space:pre-wrap;"></p>
     <div style="display:flex;gap:10px;justify-content:flex-end;">
       <button id="modal-cancel" class="btn-modal-cancel">キャンセル</button>
@@ -510,7 +566,7 @@
 </div>
 
 <!-- Edit Modal -->
-<div id="edit-modal-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;">
+<div id="edit-modal-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:var(--overlay);align-items:center;justify-content:center;">
   <div class="edit-modal-inner">
     <div class="edit-modal-title">記録を編集</div>
     <label class="edit-modal-label">日付・時刻</label>
@@ -526,7 +582,7 @@
     <textarea class="comment-input" id="edit-comment" placeholder="メモを入力..." style="min-height:90px"></textarea>
     <div class="edit-modal-actions">
       <button id="edit-cancel" class="btn-modal-cancel">キャンセル</button>
-      <button id="edit-save" style="padding:10px 18px;background:var(--accent);border:none;border-radius:8px;color:#1a1612;font-size:14px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;touch-action:manipulation;-webkit-tap-highlight-color:transparent;">保存</button>
+      <button id="edit-save" class="btn-modal-save">保存</button>
     </div>
   </div>
 </div>
@@ -670,18 +726,39 @@ function toast(msg, dur = 2000) {
 }
 
 // ====================================================
+//  iOS ホーム画面アプリの高さ補正
+// ====================================================
+// iOS のホーム画面アプリでは、画面はステータスバーの下まで広がっているのに、
+// ページの高さだけステータスバーの分短く計算されることがある（タブバーの下に隙間ができる）。
+// その形のずれのときだけ、アプリを画面の高さにそろえる
+function fixStandaloneHeight() {
+  const root = document.documentElement;
+  const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;top:0;height:env(safe-area-inset-top);visibility:hidden;pointer-events:none';
+  document.body.appendChild(probe);
+  const safeTop = probe.offsetHeight;
+  probe.remove();
+
+  const gap = screen.height - root.clientHeight;
+  const portrait = root.clientHeight > root.clientWidth;
+  const broken = standalone && portrait && safeTop > 0 && Math.abs(gap - safeTop) <= 2;
+  root.classList.toggle('vh-fix', broken);
+  if (broken) {
+    root.style.setProperty('--app-h', `${screen.height}px`);
+    root.style.setProperty('--vh-gap', `${gap}px`);
+  } else {
+    root.style.removeProperty('--app-h');
+    root.style.removeProperty('--vh-gap');
+  }
+}
+
+// ====================================================
 //  Theme
 // ====================================================
 function applyTheme(mode) {
   document.documentElement.setAttribute('data-theme', mode);
   localStorage.setItem('theme-mode', mode);
-}
-
-function isLightMode() {
-  const mode = document.documentElement.getAttribute('data-theme') || 'system';
-  if (mode === 'light') return true;
-  if (mode === 'dark')  return false;
-  return window.matchMedia('(prefers-color-scheme: light)').matches;
 }
 
 // ====================================================
@@ -1083,8 +1160,6 @@ async function renderCalendar() {
   const firstDow   = new Date(calYear, calMonth, 1).getDay();
   const daysInMon  = new Date(calYear, calMonth+1, 0).getDate();
   const daysInPrev = new Date(calYear, calMonth, 0).getDate();
-  const lightMode  = isLightMode();
-  const heatRgb    = lightMode ? '139,106,62' : '200,169,126';
 
   // Prev month padding
   for (let i = firstDow - 1; i >= 0; i--) {
@@ -1116,7 +1191,8 @@ async function renderCalendar() {
     if (count > 0) {
       el.innerHTML += `<span class="cal-count">${count}</span>`;
       const intensity = count / maxCount;
-      el.style.backgroundColor = `rgba(${heatRgb},${(0.08 + intensity * 0.32).toFixed(3)})`;
+      // テーマの切り替えにそのまま追従するよう、色は CSS 変数から取る
+      el.style.backgroundColor = `rgba(var(--accent-rgb),${(0.08 + intensity * 0.2).toFixed(3)})`;
     }
 
     el.addEventListener('click', () => { calSelected = ds; renderCalendar(); });
@@ -1273,10 +1349,10 @@ async function renderChart() {
     pieSection.appendChild(noData);
   } else {
     const slots = [
-      { label: '朝', desc: '6〜12時', color: '#E8A857', count: 0 },
-      { label: '昼', desc: '12〜18時', color: '#7AAE8C', count: 0 },
-      { label: '夜', desc: '18〜24時', color: '#5B8FCF', count: 0 },
-      { label: '深夜', desc: '0〜6時',  color: '#9B7EC8', count: 0 },
+      { label: '朝', desc: '6〜12時', color: '#EDA77A', count: 0 },
+      { label: '昼', desc: '12〜18時', color: '#7DBFA3', count: 0 },
+      { label: '夜', desc: '18〜24時', color: '#7A9FE0', count: 0 },
+      { label: '深夜', desc: '0〜6時',  color: '#A894E6', count: 0 },
     ];
     timedEntries.forEach(e => {
       const h = parseInt(e.time.slice(0, 2), 10);
@@ -1313,7 +1389,7 @@ async function renderChart() {
       item.className = 'pie-legend-item';
       item.innerHTML = `
         <span class="pie-legend-dot" style="background:${s.color}"></span>
-        <span>${s.label} <span style="font-size:10px;color:var(--text-dim)">${s.desc}</span></span>
+        <span>${s.label} <span style="font-size:11px;color:var(--text-dim)">${s.desc}</span></span>
         <span class="pie-legend-pct">${s.count}件 (${pct}%)</span>`;
       legend.appendChild(item);
     });
@@ -1557,6 +1633,10 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ====================================================
 //  Boot
 // ====================================================
+fixStandaloneHeight();
+window.addEventListener('resize', fixStandaloneHeight);
+window.addEventListener('orientationchange', fixStandaloneHeight);
+
 (async () => {
   await openDB();
   allEntries = await getAllEntries();
