@@ -658,7 +658,8 @@ function getDow(dateStr) {
   return '(' + DOW[new Date(dateStr + 'T00:00:00').getDay()] + ')';
 }
 function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 function toast(msg, dur = 2000) {
   const el = document.getElementById('toast');
@@ -1025,7 +1026,7 @@ async function renderList() {
       : '';
     card.innerHTML = `
       <div class="entry-header">
-        <span class="entry-date">${jpDate(entry.date)}${esc(timeStr)}</span>
+        <span class="entry-date">${esc(jpDate(entry.date))}${esc(timeStr)}</span>
         <span class="entry-dow">${getDow(entry.date)}</span>
       </div>
       ${tagsHtml}${commentHtml}
@@ -1430,6 +1431,24 @@ document.getElementById('new-tag-input').addEventListener('keypress', e => {
 // ====================================================
 //  Backup
 // ====================================================
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^\d{2}:\d{2}(:\d{2})?$/;
+
+// インポートしたファイルの中身を、アプリが作る形の記録とタグだけに絞る
+function sanitizeImport(data) {
+  const entries = data.entries
+    .filter(e => e && typeof e.date === 'string' && DATE_RE.test(e.date))
+    .map(e => ({
+      date:      e.date,
+      time:      typeof e.time === 'string' && TIME_RE.test(e.time) ? e.time : '',
+      tags:      Array.isArray(e.tags) ? e.tags.filter(t => typeof t === 'string') : [],
+      comment:   typeof e.comment === 'string' ? e.comment : '',
+      createdAt: typeof e.createdAt === 'number' ? e.createdAt : Date.now(),
+    }));
+  const tags = Array.isArray(data.tags) ? data.tags.filter(t => typeof t === 'string' && t.trim()) : [];
+  return { entries, tags, skipped: data.entries.length - entries.length };
+}
+
 document.getElementById('export-btn').addEventListener('click', async () => {
   const entries = await getAllEntries();
   const tags    = await getAllTags();
@@ -1453,22 +1472,22 @@ document.getElementById('import-file').addEventListener('change', async e => {
   if (!file) return;
   let data;
   try { data = JSON.parse(await file.text()); } catch { toast('ファイルが無効です'); return; }
-  if (!data.entries || !Array.isArray(data.entries)) { toast('データ形式が無効です'); return; }
+  if (!Array.isArray(data?.entries)) { toast('データ形式が無効です'); return; }
+  const { entries, tags, skipped } = sanitizeImport(data);
+  if (!entries.length && skipped) { toast('データ形式が無効です'); return; }
+  const skipNote = skipped ? `\n（形式が正しくない${skipped}件は読み込みません）` : '';
   const ok = await confirmDialog(
-    `${data.entries.length}件の記録をインポートします（既存データにマージ）。よろしいですか？`,
+    `${entries.length}件の記録をインポートします（既存データにマージ）。よろしいですか？${skipNote}`,
     'インポート'
   );
   if (!ok) return;
 
   const entryStore = store('entries', 'readwrite');
-  for (const entry of data.entries) {
-    const { id, ...rest } = entry;
-    entryStore.add(rest);
-  }
-  if (data.tags) for (const tag of data.tags) await putTag(tag);
+  for (const entry of entries) entryStore.add(entry);
+  for (const tag of tags) await putTag(tag);
 
   allEntries = await getAllEntries();
-  toast(`${data.entries.length}件をインポートしました ✓`);
+  toast(`${entries.length}件をインポートしました ✓`);
   e.target.value = '';
   await refreshTagSelector();
   renderSettings();
@@ -1483,9 +1502,12 @@ document.getElementById('import-file-fresh').addEventListener('change', async e 
   if (!file) return;
   let data;
   try { data = JSON.parse(await file.text()); } catch { toast('ファイルが無効です'); return; }
-  if (!data.entries || !Array.isArray(data.entries)) { toast('データ形式が無効です'); return; }
+  if (!Array.isArray(data?.entries)) { toast('データ形式が無効です'); return; }
+  const { entries, tags, skipped } = sanitizeImport(data);
+  if (!entries.length && skipped) { toast('データ形式が無効です'); return; }
+  const skipNote = skipped ? `\n（形式が正しくない${skipped}件は読み込みません）` : '';
   const ok = await confirmDialog(
-    `既存データをすべて削除し、${data.entries.length}件の記録で上書きします。この操作は取り消せません。よろしいですか？`,
+    `既存データをすべて削除し、${entries.length}件の記録で上書きします。この操作は取り消せません。よろしいですか？${skipNote}`,
     '完全置換インポート'
   );
   if (!ok) return;
@@ -1493,14 +1515,11 @@ document.getElementById('import-file-fresh').addEventListener('change', async e 
   await clearStore('entries');
   await clearStore('tags');
   const entryStore = store('entries', 'readwrite');
-  for (const entry of data.entries) {
-    const { id, ...rest } = entry;
-    entryStore.add(rest);
-  }
-  if (data.tags) for (const tag of data.tags) await putTag(tag);
+  for (const entry of entries) entryStore.add(entry);
+  for (const tag of tags) await putTag(tag);
 
   allEntries = await getAllEntries();
-  toast(`${data.entries.length}件で上書きインポートしました ✓`);
+  toast(`${entries.length}件で上書きインポートしました ✓`);
   e.target.value = '';
   await refreshTagSelector();
   renderSettings();
