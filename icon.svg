@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Tag-Memo のアイコンの元データ。icon-16/32/256/512.png はこれを各サイズで書き出したもの。
+       Android の丸い切り抜き（maskable）でも欠けないよう、絵は中央の半径 205 の円の中に収めている -->
+  <rect width="512" height="512" fill="#6152AD"/>
+  <rect x="186" y="126" width="206" height="206" rx="28" fill="#B4A9EE" transform="rotate(10 289 229)"/>
+  <path d="M146 182 Q146 158 170 158 H330 Q354 158 354 182 V306 L296 364 H170 Q146 364 146 340 Z" fill="#FFFFFF"/>
+  <path d="M354 306 L296 364 V330 Q296 306 320 306 Z" fill="#CBC2F4"/>
+  <path d="M188 214 H312 M188 262 H276" stroke="#9D92E3" stroke-width="18" stroke-linecap="round"/>
+</svg>
