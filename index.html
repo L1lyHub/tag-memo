@@ -323,12 +323,31 @@
     }
     .backup-icon svg { width: 18px; height: 18px; }
     .backup-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .backup-status { font-size: 12px; color: var(--text-mid); margin: -4px 0 12px; }
+    .backup-status.overdue { color: var(--danger); }
     .notice {
       margin-top: 8px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
       display: flex; gap: 10px; align-items: flex-start;
       font-size: 11px; color: var(--text-dim); line-height: 1.7;
     }
     .notice svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--text-mid); }
+    .help {
+      margin-top: 9px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      font-size: 12px; color: var(--text-mid); line-height: 1.7;
+    }
+    .help summary {
+      list-style: none; padding: 12px 14px; display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text); cursor: pointer;
+    }
+    .help summary::-webkit-details-marker { display: none; }
+    .help summary svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-mid); }
+    .help-chevron { margin-left: auto; transition: transform 0.2s; }
+    .help[open] .help-chevron { transform: rotate(180deg); }
+    .help-body { padding: 0 14px 14px; }
+    .help-head { font-size: 12px; font-weight: 500; color: var(--text); margin: 14px 0 4px; }
+    .help-head:first-child { margin-top: 0; }
+    .help-body ol, .help-body ul { padding-left: 1.4em; }
+    .help-body p { margin-top: 4px; }
 
     /* ── Chart ── */
     .chart-wrap {
@@ -478,6 +497,7 @@
       <div class="tag-manage-wrap" id="tag-manage-wrap"></div>
       <div class="divider"></div>
       <div class="section-head">バックアップ</div>
+      <div class="backup-status" id="backup-status"></div>
       <button class="backup-btn" id="export-btn">
         <span class="backup-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -508,8 +528,43 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
           <circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>
         </svg>
-        <div>iOSはSafariのキャッシュ削除でデータが消える場合があります。<br>定期的にエクスポートしてiCloud Driveに保存することを推奨します。</div>
+        <div>ホーム画面からアプリを削除すると、記録もすべて消えます。<br>定期的にエクスポートして、iCloud Driveに保存してください。</div>
       </div>
+      <details class="help">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 5.5A1.5 1.5 0 015.5 4H10a2 2 0 012 2v14a1.5 1.5 0 00-1.5-1.5h-5A1.5 1.5 0 014 17V5.5zM20 5.5A1.5 1.5 0 0018.5 4H14a2 2 0 00-2 2v14a1.5 1.5 0 011.5-1.5h5A1.5 1.5 0 0020 17V5.5z"/>
+          </svg>
+          <span>バックアップの方法と、削除するときの注意</span>
+          <svg class="help-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </summary>
+        <div class="help-body">
+          <div class="help-head">バックアップする</div>
+          <ol>
+            <li>「JSONエクスポート」をタップ</li>
+            <li>共有シートで「"ファイル"に保存」を選ぶ</li>
+            <li>保存先に「iCloud Drive」を選んで「保存」</li>
+          </ol>
+          <div class="help-head">復元する</div>
+          <ul>
+            <li>「JSONインポート」で保存したファイルを選ぶと、今の記録に追加されます</li>
+            <li>今の記録が残っているときにマージすると同じ記録が重複するので、「完全置換」を使ってください</li>
+          </ul>
+          <div class="help-head">ホーム画面から削除するとき</div>
+          <p>削除すると記録もすべて消えるので、先に必ずエクスポートしてください。アイコンを新しくするなどで追加し直す手順は次のとおりです。</p>
+          <ol>
+            <li>エクスポートして、iCloud Driveに保存</li>
+            <li>ホーム画面からアプリを削除</li>
+            <li>Safariでこのアプリを開き、共有メニューから「ホーム画面に追加」</li>
+            <li>追加したアプリで「JSONインポート」を使って復元</li>
+          </ol>
+          <p>アプリの中身の更新は、追加し直さなくても、アプリを終了して開き直せば反映されます。</p>
+          <div class="help-head">Safariで使っているとき</div>
+          <p>ホーム画面に追加せずSafariで使っている場合は、Safariの履歴とWebサイトデータを消去したときにも記録が消えます。</p>
+        </div>
+      </details>
     </div>
 
   </div>
@@ -688,6 +743,7 @@ function clearStore(name) {
 //  App State
 // ====================================================
 let allEntries   = [];
+let settingsTags = [];  // 設定タブに表示中のタグ（エクスポートで IndexedDB を待たずに使う）
 let selectedTags = [];
 let activeFilter = null;
 const FILTER_NO_TAG = '__no_tag__';
@@ -701,7 +757,9 @@ let _holidayCache = {};
 //  Utilities
 // ====================================================
 function todayStr() {
-  const d = new Date();
+  return ymd(new Date());
+}
+function ymd(d) {
   return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
 }
 function p2(n) { return String(n).padStart(2,'0'); }
@@ -1405,6 +1463,7 @@ async function renderChart() {
 async function renderSettings() {
   const tags      = await getAllTags();
   const thisMonth = allEntries.filter(e => e.date.startsWith(todayStr().slice(0,7))).length;
+  settingsTags = tags;
 
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card"><div class="stat-num">${allEntries.length}</div><div class="stat-label">総記録数</div></div>
@@ -1423,6 +1482,7 @@ async function renderSettings() {
   });
 
   renderTagManage(tags);
+  renderBackupStatus();
 }
 
 function renderTagManage(tags) {
@@ -1525,17 +1585,53 @@ function sanitizeImport(data) {
   return { entries, tags, skipped: data.entries.length - entries.length };
 }
 
-document.getElementById('export-btn').addEventListener('click', async () => {
-  const entries = await getAllEntries();
-  const tags    = await getAllTags();
-  const payload = { version: 1, exportedAt: new Date().toISOString(), entries, tags };
-  const blob    = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url     = URL.createObjectURL(blob);
-  const a       = document.createElement('a');
-  a.href        = url;
-  a.download    = `tagmemo_${todayStr().replace(/-/g,'')}.json`;
+const LAST_BACKUP_KEY     = 'last-backup-at';
+const BACKUP_OVERDUE_DAYS = 7;
+
+function renderBackupStatus() {
+  const el = document.getElementById('backup-status');
+  const at = Number(localStorage.getItem(LAST_BACKUP_KEY));
+  if (!at) {
+    el.textContent = 'まだバックアップしていません';
+    el.classList.toggle('overdue', allEntries.length > 0);
+    return;
+  }
+  const date = ymd(new Date(at));
+  const days = Math.round((new Date(todayStr() + 'T00:00:00') - new Date(date + 'T00:00:00')) / 86400000);
+  const ago  = days <= 0 ? '今日' : days === 1 ? '昨日' : `${days}日前`;
+  el.textContent = `前回のバックアップ：${ago}（${jpDate(date)}）`;
+  el.classList.toggle('overdue', days >= BACKUP_OVERDUE_DAYS);
+}
+
+function downloadFile(file) {
+  const url  = URL.createObjectURL(file);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = file.name;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+document.getElementById('export-btn').addEventListener('click', async () => {
+  // iOS では、タップから時間がたつと共有シートを開けなくなるので、
+  // IndexedDB の読み込みを待たずにメモリ上のデータからファイルを作る
+  const payload = { version: 1, exportedAt: new Date().toISOString(), entries: allEntries, tags: settingsTags };
+  const file    = new File([JSON.stringify(payload, null, 2)], `tagmemo_${todayStr().replace(/-/g,'')}.json`,
+    { type: 'application/json' });
+
+  // 共有シートが使えれば、「"ファイル"に保存」から iCloud Drive などに保存できる
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file] });
+    } catch (err) {
+      if (err.name === 'AbortError') return;  // 共有シートを閉じた
+      downloadFile(file);
+    }
+  } else {
+    downloadFile(file);
+  }
+  localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()));
+  renderBackupStatus();
   toast('エクスポートしました ✓');
 });
 
@@ -1642,6 +1738,14 @@ window.addEventListener('orientationchange', fixStandaloneHeight);
   allEntries = await getAllEntries();
   await initRecord();
 })();
+
+// 端末の空き容量が少ないときなどに、記録が自動で消されないよう頼む
+if (navigator.storage?.persist) navigator.storage.persist();
+
+// オフラインでも開けるようにする（sw.js）
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(err => console.warn('Service worker registration failed:', err));
+}
 
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible') {
